@@ -1,0 +1,72 @@
+let data = [];
+let m = 1;
+let b = 0;
+
+function setup() {
+	var cnv = createCanvas(600, 600);
+  	var x = (windowWidth - width) / 2;
+  	var y = (windowHeight - height) / 2;
+  	cnv.position(x, y);
+}
+
+function mousePressed() {
+	let x = map(mouseX, 0, width, 0, 1);
+	let y = map(mouseY, 0, height, 1, 0);
+
+	let point = createVector(x, y);
+	data.push(point);
+}
+
+function linearRegression() {
+	let xsum = 0;
+	let ysum = 0;
+
+	for (let i = 0; i < data.length; i++) {
+		xsum = xsum + data[i].x;
+		ysum = ysum + data[i].y;
+	}
+	let xmean = xsum / data.length;
+	let ymean = ysum / data.length;
+
+	let num = 0;
+	let den = 0;
+
+	for (let i = 0; i < data.length; i++) {
+		num = num + (data[i].x - xmean) * (data[i].y - ymean);
+		den = den + (data[i].x - xmean) * (data[i].x - xmean);
+	}
+
+	m = num / den;
+	b = ymean - m * xmean;
+}
+
+function draw() {
+	background(51);
+	for (let i = 0; i < data.length; i++) {
+		let x = map(data[i].x, 0, 1, 0, width);
+		let y = map(data[i].y, 0, 1, height, 0);
+		fill(255);
+		stroke(255);
+		ellipse(x, y, 8 , 8);
+	}
+
+	if (data.length > 1) {
+		linearRegression();
+		drawLine();
+	}
+}
+
+function drawLine() {
+	let x1 = 0;
+	let y1 = m * x1 + b;
+	let x2 = 1;
+	let y2  = m * x2 + b;
+
+	x1 = map(x1, 0, 1, 0, width);
+	y1 = map(y1, 0, 1, height, 0);
+	x2 = map(x2, 0, 1, 0, width);
+	y2 = map(y2, 0, 1, height, 0);
+
+	stroke(255, 0, 255);
+	line(x1, y1, x2, y2);
+}
